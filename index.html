@@ -1,165 +1,94 @@
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Meteor Escape 2.0</title>
-
+  <title>Meteor Escape 3.0</title>
   <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-  <!-- 시작 화면 -->
-  <div id="startScreen">
-
+<!-- 시작 화면 -->
+<div id="startScreen">
+  <div class="panel">
     <h1>🚀 Meteor Escape</h1>
 
-    <p>
-      우주선을 조종하여<br>
-      떨어지는 운석을 피하세요!
+    <p class="desc">
+      우주선을 조종하여 떨어지는 운석을 피하세요!
     </p>
 
-    <div class="guide">
-
-      ❤️ 목숨 3개
-
-      <br><br>
-
-      ☄️ 운석에 맞으면 목숨 감소
-
-      <br><br>
-
-      🏆 운석을 피할 때마다 점수 +1
-
-      <br><br>
-
-      ⌨️ 방향키 ← → 로 이동
-
-      <br><br>
-
-      살아남아 최고 점수에 도전하세요!
-    </div>
-
+    <ul class="guide">
+      <li>❤️ 목숨은 총 3개입니다.</li>
+      <li>☄️ 운석을 피할 때마다 점수가 +1 증가합니다.</li>
+      <li>⌨️ 방향키 ← → 로 이동합니다.</li>
+      <li>🏆 최고 점수에 도전해보세요!</li>
+    </ul>
 
     <button id="startBtn">
-
       게임 시작
+    </button>
+  </div>
+</div>
+
+
+<!-- 게임 UI -->
+<div id="hud">
+
+  <div id="lives">
+    ❤️❤️❤️
+  </div>
+
+  <div>
+    SCORE :
+    <span id="score">0</span>
+  </div>
+
+  <div>
+    BEST :
+    <span id="best">0</span>
+  </div>
+
+</div>
+
+
+<canvas
+id="gameCanvas"
+width="500"
+height="700">
+</canvas>
+
+
+
+<!-- 게임오버 -->
+
+<div id="gameOver" class="hidden">
+
+  <div class="panel">
+
+    <h1>💥 GAME OVER</h1>
+
+    <p>
+      SCORE :
+      <span id="finalScore">0</span>
+    </p>
+
+    <p>
+      BEST :
+      <span id="finalBest">0</span>
+    </p>
+
+    <button id="restartBtn">
+
+      PLAY AGAIN
 
     </button>
 
   </div>
 
-
-  <!-- 상단 UI -->
-
-  <div id="hud">
-
-    <div id="lives">
-
-      ❤️ ❤️ ❤️
-
-    </div>
-
-
-    <div class="scoreBox">
-
-      SCORE :
-      <span id="score">
-
-        0
-
-      </span>
-
-    </div>
-
-
-    <div class="scoreBox">
-
-      BEST :
-      <span id="best">
-
-        0
-
-      </span>
-
-    </div>
-
-  </div>
-
-
-
-  <!-- 게임 화면 -->
-
-  <canvas
-
-      id="gameCanvas"
-
-      width="500"
-
-      height="700">
-
-  </canvas>
-
-
-
-
-  <!-- 게임 오버 -->
-
-  <div
-
-    id="overlay"
-
-    class="hidden">
-
-      <h1>
-
-        💥 GAME OVER
-
-      </h1>
-
-
-      <p>
-
-        YOUR SCORE :
-
-        <span id="finalScore">
-
-          0
-
-        </span>
-
-      </p>
-
-
-
-      <p>
-
-        BEST :
-
-        <span id="finalBest">
-
-          0
-
-        </span>
-
-      </p>
-
-
-
-      <button id="restartBtn">
-
-        PLAY AGAIN
-
-      </button>
-
-  </div>
-
+</div>
 
 
 <script src="script.js"></script>
 
 </body>
-
 </html>

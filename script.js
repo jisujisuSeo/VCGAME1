@@ -1,72 +1,65 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
+// UI
 const startScreen = document.getElementById("startScreen");
 const startBtn = document.getElementById("startBtn");
 
-const overlay = document.getElementById("overlay");
+const gameOverScreen = document.getElementById("gameOver");
+const restartBtn = document.getElementById("restartBtn");
 
-const restartBtn =
-document.getElementById("restartBtn");
+const scoreEl = document.getElementById("score");
+const bestEl = document.getElementById("best");
 
-const scoreEl =
-document.getElementById("score");
+const finalScore = document.getElementById("finalScore");
+const finalBest = document.getElementById("finalBest");
 
-const bestEl =
-document.getElementById("best");
-
-const livesEl =
-document.getElementById("lives");
-
-const finalScore =
-document.getElementById("finalScore");
-
-const finalBest =
-document.getElementById("finalBest");
+const livesEl = document.getElementById("lives");
 
 
+// 게임 상태
+let gameState = "start";
 
+// 플레이어
 let player;
 
+// 운석
 let meteors=[];
 
+// 별
 let stars=[];
 
 
-let score=0;
+// 입력
+let leftPressed=false;
+let rightPressed=false;
 
+
+// 게임 데이터
+let score=0;
 let best=0;
 
 let lives=3;
-
-let gameStarted=false;
-
-let gameOver=false;
 
 let invincible=0;
 
 
 
-let leftPressed=false;
-
-let rightPressed=false;
-
-
+// 초기화
 
 function init(){
 
-
 player={
 
-x:225,
+x:220,
 
 y:620,
 
-width:50,
+width:60,
 
-height:50,
+height:60,
 
-speed:10
+speed:8
 
 };
 
@@ -77,7 +70,7 @@ meteors=[];
 stars=[];
 
 
-for(let i=0;i<70;i++){
+for(let i=0;i<80;i++){
 
 stars.push({
 
@@ -85,7 +78,9 @@ x:Math.random()*500,
 
 y:Math.random()*700,
 
-size:Math.random()*2+1
+size:Math.random()*2+1,
+
+speed:0.5+Math.random()
 
 });
 
@@ -101,15 +96,7 @@ lives=3;
 invincible=0;
 
 
-gameOver=false;
-
-
-best=
-
-localStorage.getItem("meteorBest") || 0;
-
-
-overlay.classList.add("hidden");
+best=localStorage.getItem("meteorBest") || 0;
 
 
 updateUI();
@@ -118,7 +105,15 @@ updateUI();
 
 
 
+
+
+
 function updateUI(){
+
+scoreEl.innerText=score;
+
+
+bestEl.innerText=best;
 
 
 livesEl.innerHTML=
@@ -129,26 +124,17 @@ livesEl.innerHTML=
 
 "🤍".repeat(3-lives);
 
-
-
-scoreEl.innerText=score;
-
-
-bestEl.innerText=best;
-
-
 }
 
 
 
-startBtn.addEventListener(
 
-"click",
+// 시작
 
-()=>{
+startBtn.addEventListener("click",()=>{
 
 
-gameStarted=true;
+gameState="playing";
 
 
 startScreen.style.display="none";
@@ -157,34 +143,35 @@ startScreen.style.display="none";
 init();
 
 
-}
-
-);
+});
 
 
 
-restartBtn.addEventListener(
 
-"click",
+// 다시하기
 
-()=>{
+restartBtn.addEventListener("click",()=>{
+
+
+gameState="playing";
+
+
+gameOverScreen.classList.add("hidden");
 
 
 init();
 
 
-}
-
-);
+});
 
 
 
 
-document.addEventListener(
 
-"keydown",
 
-(e)=>{
+// 키 입력
+
+document.addEventListener("keydown",(e)=>{
 
 
 if(e.key==="ArrowLeft"){
@@ -201,18 +188,11 @@ rightPressed=true;
 }
 
 
-}
-
-);
+});
 
 
 
-
-document.addEventListener(
-
-"keyup",
-
-(e)=>{
+document.addEventListener("keyup",(e)=>{
 
 
 if(e.key==="ArrowLeft"){
@@ -229,21 +209,21 @@ rightPressed=false;
 }
 
 
-}
-
-);
+});
 
 
 
+
+
+
+
+
+// 운석 생성
 
 setInterval(()=>{
 
 
-if(!gameStarted) return;
-
-
-if(gameOver) return;
-
+if(gameState!=="playing") return;
 
 
 meteors.push({
@@ -252,7 +232,7 @@ meteors.push({
 x:Math.random()*450,
 
 
-y:-50,
+y:-60,
 
 
 radius:20+Math.random()*20,
@@ -267,7 +247,9 @@ passed:false
 });
 
 
-},500);
+},600);
+
+
 
 
 
@@ -277,23 +259,17 @@ passed:false
 function collision(a,b){
 
 
-return (
-
+return(
 
 a.x < b.x+b.radius*2 &&
 
-
 a.x+a.width > b.x &&
-
 
 a.y < b.y+b.radius*2 &&
 
-
 a.y+a.height > b.y
 
-
 );
-
 
 }
 
@@ -312,12 +288,14 @@ ctx.fillStyle="white";
 stars.forEach(star=>{
 
 
-star.y+=1;
+star.y+=star.speed;
 
 
 if(star.y>700){
 
 star.y=0;
+
+star.x=Math.random()*500;
 
 }
 
@@ -346,14 +324,15 @@ star.size
 
 
 
-
 function drawPlayer(){
 
 
 
 if(
 
-invincible>0 &&
+invincible>0
+
+&&
 
 Math.floor(invincible/5)%2
 
@@ -371,16 +350,36 @@ ctx.fillStyle="#22d3ee";
 
 
 
+// 우주선
+
 ctx.beginPath();
 
 
-ctx.moveTo(player.x+25,player.y);
+ctx.moveTo(
+
+player.x+30,
+
+player.y
+
+);
 
 
-ctx.lineTo(player.x,player.y+50);
+ctx.lineTo(
+
+player.x,
+
+player.y+60
+
+);
 
 
-ctx.lineTo(player.x+50,player.y+50);
+ctx.lineTo(
+
+player.x+60,
+
+player.y+60
+
+);
 
 
 ctx.closePath();
@@ -388,8 +387,8 @@ ctx.closePath();
 
 ctx.fill();
 
-
 }
+
 
 
 
@@ -408,11 +407,12 @@ let m=meteors[i];
 
 
 
-m.y +=
+m.y+=
 
-m.speed +
+m.speed+
 
 score*0.02;
+
 
 
 
@@ -443,6 +443,7 @@ ctx.fill();
 
 
 
+
 if(
 
 m.y>700
@@ -453,7 +454,6 @@ m.y>700
 
 ){
 
-
 m.passed=true;
 
 
@@ -461,8 +461,8 @@ score++;
 
 
 
-if(score>best){
 
+if(score>best){
 
 best=score;
 
@@ -475,15 +475,14 @@ best
 
 );
 
-
 }
 
 
 
 updateUI();
 
-
 }
+
 
 
 
@@ -503,7 +502,6 @@ invincible<=0
 lives--;
 
 
-
 invincible=60;
 
 
@@ -512,20 +510,10 @@ updateUI();
 
 
 
-
 if(lives<=0){
 
 
-gameOver=true;
-
-
-
-overlay.classList.remove(
-
-"hidden"
-
-);
-
+gameState="gameover";
 
 
 finalScore.innerText=score;
@@ -534,55 +522,49 @@ finalScore.innerText=score;
 finalBest.innerText=best;
 
 
+gameOverScreen.classList.remove(
+
+"hidden"
+
+);
+
 
 }
 
+
 }
+
+
 
 
 
 if(m.y>760){
 
-
 meteors.splice(i,1);
 
-
-}
-
-
-
 }
 
 
 }
 
 
+}
 
 
 
 
 
-function gameLoop(){
 
 
 
-requestAnimationFrame(
-
-gameLoop
-
-);
+function update(){
 
 
+requestAnimationFrame(update);
 
-if(
 
-!gameStarted
 
-||
-
-gameOver
-
-){
+if(gameState!=="playing"){
 
 return;
 
@@ -609,12 +591,13 @@ drawStars();
 
 
 
+// 부드러운 이동
+
 if(leftPressed){
 
 player.x-=player.speed;
 
 }
-
 
 
 if(rightPressed){
@@ -631,14 +614,13 @@ player.x=Math.max(
 
 Math.min(
 
-450,
+440,
 
 player.x
 
 )
 
 );
-
 
 
 
@@ -663,4 +645,4 @@ invincible--;
 
 
 
-gameLoop();
+update();
