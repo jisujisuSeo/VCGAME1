@@ -1,544 +1,554 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
-// UI
-const startScreen = document.getElementById("startScreen");
-const startBtn = document.getElementById("startBtn");
-
-const gameOverScreen = document.getElementById("gameOver");
-const restartBtn = document.getElementById("restartBtn");
-
-const scoreEl = document.getElementById("score");
-const bestEl = document.getElementById("best");
-
-const finalScore = document.getElementById("finalScore");
-const finalBest = document.getElementById("finalBest");
-
-const livesEl = document.getElementById("lives");
-
-const hitSound = document.getElementById("hitSound");
+const WIDTH = canvas.width;
+const HEIGHT = canvas.height;
 
 
-// 상태
-let gameState = "start";
+// --------------------
+// 게임 상태
+// --------------------
 
+let gameStarted = false;
+let gameOver = false;
 
-// 플레이어
-let player;
-
-
-// 배열
-let meteors = [];
-let stars = [];
-
-
-// 키 입력
-let leftPressed = false;
-let rightPressed = false;
-
-
-// 게임 데이터
 let score = 0;
-let best = 0;
+
+let bestScore =
+Number(localStorage.getItem("meteorBest")) || 0;
 
 let lives = 3;
 
-let invincible = 0;
 
+// --------------------
+// 우주선
+// --------------------
 
-// 초기화
+const ship = {
 
-function init(){
+    x: WIDTH/2 -16,
 
-    player={
+    y: HEIGHT -90,
 
-        x:232,
+    width:32,
 
-        y:640,
+    height:32,
 
-        width:36,
+    speed:0,
 
-        height:36,
+    maxSpeed:7,
 
-        speed:9
+    accel:0.6,
 
-    };
+    friction:0.88,
 
+    invincible:0
 
-    meteors=[];
+};
 
-    stars=[];
 
-
-    for(let i=0;i<80;i++){
-
-        stars.push({
-
-            x:Math.random()*500,
-
-            y:Math.random()*700,
-
-            size:Math.random()*2+1,
-
-            speed:0.5+Math.random()
-
-        });
-
-    }
-
-
-    score=0;
-
-    lives=3;
-
-    invincible=0;
-
-
-    best = localStorage.getItem("meteorBest") || 0;
-
-
-    updateUI();
-
-}
-
-
-
-
-function updateUI(){
-
-    scoreEl.innerText=score;
-
-    bestEl.innerText=best;
-
-
-    livesEl.innerHTML=
-
-    "❤️".repeat(lives)
-
-    +
-
-    "🤍".repeat(3-lives);
-
-}
-
-
-
-
-
-// 시작 버튼
-
-startBtn.addEventListener("click",()=>{
-
-    gameState="playing";
-
-    startScreen.style.display="none";
-
-    init();
-
-});
-
-
-
-
-// 다시하기
-
-restartBtn.addEventListener("click",()=>{
-
-    gameState="playing";
-
-    gameOverScreen.classList.add("hidden");
-
-    init();
-
-});
-
-
-
-
-
-
+// --------------------
 // 키 입력
+// --------------------
 
-document.addEventListener("keydown",(e)=>{
+const keys = {};
 
-    if(e.key==="ArrowLeft"){
+document.addEventListener("keydown",e=>{
 
-        leftPressed=true;
+    keys[e.key]=true;
 
-    }
+});
 
+document.addEventListener("keyup",e=>{
 
-    if(e.key==="ArrowRight"){
-
-        rightPressed=true;
-
-    }
+    keys[e.key]=false;
 
 });
 
 
 
 
-document.addEventListener("keyup",(e)=>{
+// --------------------
+// 별
+// --------------------
+
+const stars=[];
+
+for(let i=0;i<100;i++){
+
+    stars.push({
+
+        x:Math.random()*WIDTH,
+
+        y:Math.random()*HEIGHT,
+
+        size:Math.random()*2+1,
+
+        speed:Math.random()*2+0.5
+
+    });
+
+}
 
 
-    if(e.key==="ArrowLeft"){
+function drawStars(){
 
-        leftPressed=false;
+    ctx.fillStyle="white";
+
+
+    stars.forEach(st=>{
+
+        st.y+=st.speed;
+
+        if(st.y>HEIGHT){
+
+            st.y=0;
+
+            st.x=Math.random()*WIDTH;
+
+        }
+
+        ctx.fillRect(
+
+            st.x,
+
+            st.y,
+
+            st.size,
+
+            st.size
+
+        );
+
+    });
+
+}
+
+
+
+// --------------------
+// 운석
+// --------------------
+
+
+const meteors=[];
+
+
+function spawnMeteor(){
+
+    const type=Math.floor(Math.random()*3);
+
+
+
+    let size=20;
+
+    let speed=4;
+
+
+    if(type===1){
+
+        size=30;
+
+        speed=5;
 
     }
 
 
-    if(e.key==="ArrowRight"){
+    if(type===2){
 
-        rightPressed=false;
+        size=45;
+
+        speed=3;
 
     }
-
-
-});
-
-
-
-
-
-
-
-
-// 운석 생성
-
-setInterval(()=>{
-
-    if(gameState!=="playing") return;
 
 
     meteors.push({
 
-        x:Math.random()*440,
+        x:Math.random()*(WIDTH-size),
 
-        y:-50,
+        y:-size,
 
-        radius:18+Math.random()*20,
+        size:size,
 
-        speed:3+Math.random()*3,
+        speed:speed,
 
-        passed:false
+        rot:0,
+
+        rotSpeed:
+
+        (Math.random()-0.5)*0.1
 
     });
 
-
-},550);
-
-
-
-
-
-
-
-// 충돌 판정
-
-function collision(a,b){
-
-const hitBox=6;
-
-
-return(
-
-a.x+hitBox < b.x+b.radius*2 &&
-
-a.x+a.width-hitBox > b.x &&
-
-a.y+hitBox < b.y+b.radius*2 &&
-
-a.y+a.height-hitBox > b.y
-
-);
-
 }
 
 
 
 
+function updateMeteors(){
 
 
+    meteors.forEach(m=>{
 
-// 별
+        m.y+=m.speed;
 
-function drawStars(){
+        m.rot+=m.rotSpeed;
 
-
-ctx.fillStyle="white";
-
-
-stars.forEach(star=>{
-
-
-star.y += star.speed;
-
-
-if(star.y>700){
-
-star.y=0;
-
-star.x=Math.random()*500;
+    });
 
 }
 
 
-ctx.fillRect(
-
-star.x,
-
-star.y,
-
-star.size,
-
-star.size
-
-);
-
-
-});
-
-
-}
-
-
-
-
-
-
-
-
-
-// 우주선
-
-function drawPlayer(){
-
-
-
-if(
-
-invincible>0
-
-&&
-
-Math.floor(invincible/5)%2
-
-){
-
-ctx.fillStyle="white";
-
-}
-
-else{
-
-ctx.fillStyle="#22d3ee";
-
-}
-
-
-
-
-ctx.beginPath();
-
-ctx.moveTo(
-
-player.x+18,
-
-player.y
-
-);
-
-
-
-ctx.lineTo(
-
-player.x,
-
-player.y+36
-
-);
-
-
-
-ctx.lineTo(
-
-player.x+36,
-
-player.y+36
-
-);
-
-
-
-ctx.closePath();
-
-
-ctx.fill();
-
-
-}
-
-
-
-
-
-
-
-
-
-
-// 운석
 
 function drawMeteors(){
 
 
-for(let i=meteors.length-1;i>=0;i--){
+    meteors.forEach(m=>{
+
+        ctx.save();
 
 
-let m=meteors[i];
+        ctx.translate(
+
+            m.x+m.size/2,
+
+            m.y+m.size/2
+
+        );
+
+        ctx.rotate(m.rot);
+
+
+        ctx.fillStyle="#777";
+
+
+        ctx.beginPath();
+
+
+        ctx.arc(
+
+        0,
+
+        0,
+
+        m.size/2,
+
+        0,
+
+        Math.PI*2
+
+        );
+
+
+        ctx.fill();
+
+
+        ctx.restore();
+
+    });
+
+}
 
 
 
-m.y +=
-
-m.speed+
-
-score*0.02;
+// --------------------
+// 우주선 이동
+// --------------------
 
 
 
-ctx.fillStyle="#f97316";
+function moveShip(){
 
 
-ctx.beginPath();
+    if(keys["ArrowLeft"] ||
+
+       keys["a"] ||
+
+       keys["A"]){
 
 
-ctx.arc(
+        ship.speed-=ship.accel;
 
-m.x+m.radius,
-
-m.y+m.radius,
-
-m.radius,
-
-0,
-
-Math.PI*2
-
-);
+    }
 
 
-ctx.fill();
+    if(keys["ArrowRight"] ||
 
+       keys["d"] ||
+
+       keys["D"]){
+
+
+        ship.speed+=ship.accel;
+
+    }
 
 
 
+    ship.speed*=ship.friction;
 
-if(
 
-m.y>700
 
-&&
+    if(ship.speed>ship.maxSpeed)
 
-!m.passed
+    ship.speed=ship.maxSpeed;
 
-){
 
-m.passed=true;
 
+    if(ship.speed<-ship.maxSpeed)
+
+    ship.speed=-ship.maxSpeed;
+
+
+
+    ship.x+=ship.speed;
+
+
+
+    if(ship.x<0)
+
+    ship.x=0;
+
+
+
+    if(ship.x>
+
+        WIDTH-ship.width)
+
+    ship.x=
+
+        WIDTH-ship.width;
+
+}
+
+
+
+
+function drawShip(){
+
+
+    if(
+
+    ship.invincible>0 &&
+
+    Math.floor(ship.invincible/5)%2===0
+
+    ){
+
+        return;
+
+    }
+
+
+    ctx.fillStyle="#69b7ff";
+
+
+
+    ctx.beginPath();
+
+
+    ctx.moveTo(
+
+        ship.x+16,
+
+        ship.y
+
+    );
+
+
+    ctx.lineTo(
+
+        ship.x,
+
+        ship.y+32
+
+    );
+
+
+    ctx.lineTo(
+
+        ship.x+32,
+
+        ship.y+32
+
+    );
+
+
+    ctx.closePath();
+
+
+    ctx.fill();
+
+
+}
+// --------------------
+// 충돌 판정
+// --------------------
+
+function checkCollision(){
+
+    meteors.forEach((m,index)=>{
+
+        const dx =
+        (m.x+m.size/2)
+        -
+        (ship.x+ship.width/2);
+
+        const dy =
+        (m.y+m.size/2)
+        -
+        (ship.y+ship.height/2);
+
+        const distance =
+        Math.sqrt(dx*dx+dy*dy);
+
+
+        if(
+
+        distance
+
+        <
+
+        m.size/2 + 12
+
+        &&
+
+        ship.invincible<=0
+
+        ){
+
+            lives--;
+
+            ship.invincible=120;
+
+            meteors.splice(index,1);
+
+
+            if(lives<=0){
+
+                endGame();
+
+            }
+
+        }
+
+    });
+
+}
+
+
+
+// --------------------
+// HUD
+// --------------------
+
+function drawHUD(){
+
+
+document.getElementById("score").innerText=
+
+" SCORE : "+score;
+
+
+document.getElementById("best").innerText=
+
+" BEST : "+bestScore;
+
+
+
+let hearts="";
+
+for(let i=0;i<lives;i++){
+
+hearts+="❤️ ";
+
+}
+
+
+document.getElementById("lives")
+
+.innerHTML=hearts;
+
+
+}
+
+
+
+// --------------------
+// 점수
+// --------------------
+
+
+function updateScore(){
+
+
+meteors.forEach((m,index)=>{
+
+
+if(m.y>HEIGHT+100){
 
 score++;
 
+meteors.splice(index,1);
+
+}
+
+});
+
+}
 
 
-if(score>best){
+
+// --------------------
+// 게임 종료
+// --------------------
 
 
-best=score;
+function endGame(){
+
+
+gameOver=true;
+
+
+if(score>bestScore){
+
+bestScore=score;
 
 
 localStorage.setItem(
 
 "meteorBest",
 
-best
+bestScore
 
 );
 
-
-}
-
-
-updateUI();
-
-
 }
 
 
 
+document
 
-if(
+.getElementById("finalScore")
 
-collision(player,m)
+.innerHTML=
 
-&&
+"최종 점수 : "
 
-invincible<=0
++
 
-){
-
-
-hitSound.currentTime=0;
-
-hitSound.play();
-
-
-lives--;
-
-
-invincible=60;
-
-
-updateUI();
+score;
 
 
 
-if(lives<=0){
+document
 
+.getElementById("gameOver")
 
-gameState="gameover";
+.classList
 
-
-finalScore.innerText=score;
-
-
-finalBest.innerText=best;
-
-
-gameOverScreen.classList.remove(
-
-"hidden"
-
-);
-
-
-}
-
-
-}
-
-
-
-if(m.y>760){
-
-meteors.splice(i,1);
-
-}
-
-
-}
+.remove("hidden");
 
 
 }
@@ -546,31 +556,19 @@ meteors.splice(i,1);
 
 
 
+// --------------------
+// 게임 루프
+// --------------------
+
+
+let spawnTimer=0;
 
 
 
+function animate(){
 
 
-function gameLoop(){
-
-
-requestAnimationFrame(
-
-gameLoop
-
-);
-
-
-
-if(
-
-gameState!=="playing"
-
-){
-
-return;
-
-}
+if(!gameStarted)return;
 
 
 
@@ -580,9 +578,9 @@ ctx.clearRect(
 
 0,
 
-500,
+WIDTH,
 
-700
+HEIGHT
 
 );
 
@@ -592,58 +590,204 @@ drawStars();
 
 
 
+moveShip();
 
-if(leftPressed){
 
-player.x-=player.speed;
+
+drawShip();
+
+
+
+spawnTimer++;
+
+
+
+if(spawnTimer>35){
+
+
+spawnMeteor();
+
+
+spawnTimer=0;
+
 
 }
 
 
 
-if(rightPressed){
+updateMeteors();
 
-player.x+=player.speed;
-
-}
-
-
-
-player.x=Math.max(
-
-0,
-
-Math.min(
-
-464,
-
-player.x
-
-)
-
-);
-
-
-
-
-drawPlayer();
 
 
 drawMeteors();
 
 
 
+checkCollision();
 
-if(invincible>0){
 
-invincible--;
+
+updateScore();
+
+
+
+drawHUD();
+
+
+
+if(ship.invincible>0){
+
+ship.invincible--;
 
 }
 
 
 
+if(!gameOver){
+
+requestAnimationFrame(
+
+animate
+
+);
+
+}
+
+
 }
 
 
 
-gameLoop();
+
+
+// --------------------
+// 시작 버튼
+// --------------------
+
+
+
+document
+
+.getElementById("startBtn")
+
+.addEventListener(
+
+"click",
+
+()=>{
+
+
+document
+
+.getElementById(
+
+"startScreen"
+
+)
+
+.classList
+
+.add("hidden");
+
+
+
+gameStarted=true;
+
+gameOver=false;
+
+score=0;
+
+lives=3;
+
+
+
+animate();
+
+
+}
+
+);
+
+
+
+
+// --------------------
+// 재시작
+// --------------------
+
+
+
+document
+
+.getElementById(
+
+"restartBtn"
+
+)
+
+.addEventListener(
+
+"click",
+
+()=>{
+
+
+meteors.length=0;
+
+
+
+score=0;
+
+lives=3;
+
+
+ship.x=
+
+WIDTH/2-16;
+
+
+ship.invincible=0;
+
+
+gameOver=false;
+
+
+
+document
+
+.getElementById(
+
+"gameOver"
+
+)
+
+.classList
+
+.add("hidden");
+
+
+
+animate();
+
+
+}
+
+);
+
+
+
+
+// 최고점수 표시
+
+
+document
+
+.getElementById("best")
+
+.innerHTML=
+
+"BEST : "
+
++
+
+bestScore;

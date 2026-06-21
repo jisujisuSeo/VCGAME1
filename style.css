@@ -6,59 +6,14 @@
 
 body{
 
-    background:#020617;
-
-    color:white;
-
-    font-family:'Segoe UI',sans-serif;
-
-    display:flex;
-
-    flex-direction:column;
-
-    align-items:center;
+    background:
+    radial-gradient(circle at top,#14203d,#03050f);
 
     overflow:hidden;
 
-}
-
-
-
-/* 공통 패널 */
-
-.panel{
-
-    background:rgba(15,23,42,0.95);
-
-    padding:45px;
-
-    border-radius:25px;
-
-    text-align:center;
-
-    box-shadow:
-
-    0 0 40px rgba(34,211,238,0.25);
-
-}
-
-
-
-/* 시작 화면 */
-
-#startScreen{
-
-    position:fixed;
-
-    top:0;
-
-    left:0;
-
-    width:100%;
-
-    height:100%;
-
-    background:rgba(0,0,0,0.92);
+    font-family:
+    "Segoe UI",
+    sans-serif;
 
     display:flex;
 
@@ -66,166 +21,210 @@ body{
 
     align-items:center;
 
-    z-index:999;
+    height:100vh;
+
+    color:white;
+
+}
+
+#gameCanvas{
+
+    border:2px solid #2d355d;
+
+    border-radius:16px;
+
+    box-shadow:
+
+    0 0 30px rgba(80,150,255,.3);
+
+    background:#020611;
 
 }
 
 
+.overlay{
 
-#startScreen h1{
+    position:absolute;
 
-    font-size:60px;
+    width:100%;
+
+    height:100%;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
+
+    z-index:10;
+
+    background:
+
+    rgba(0,0,0,.65);
+
+    text-align:center;
+
+}
+
+
+.overlay h1{
+
+    font-size:48px;
+
+    margin-bottom:20px;
+
+}
+
+
+.overlay p{
+
+    font-size:20px;
 
     margin-bottom:25px;
-
-}
-
-
-
-.desc{
-
-    font-size:26px;
-
-    margin-bottom:35px;
-
-    line-height:1.5;
-
-}
-
-
-
-.guide{
-
-    font-size:22px;
 
     line-height:1.8;
 
 }
 
 
+.hidden{
 
-#startBtn{
-
-    margin-top:40px;
+    display:none;
 
 }
 
 
-
-/* 버튼 */
 
 button{
 
-    background:#06b6d4;
+    border:none;
+
+    background:#5b8cff;
 
     color:white;
 
-    border:none;
+    font-size:20px;
 
-    border-radius:15px;
+    padding:
 
-    padding:18px 40px;
+    14px 28px;
 
-    font-size:25px;
+    border-radius:40px;
 
     cursor:pointer;
 
-    transition:0.2s;
+    transition:.2s;
 
 }
-
 
 
 button:hover{
 
-    transform:scale(1.08);
+    transform:scale(1.05);
+
+    box-shadow:
+
+    0 0 25px
+
+    rgba(91,140,255,.7);
 
 }
 
 
-
-/* HUD */
-
 #hud{
+
+    position:absolute;
+
+    top:20px;
+
+    width:480px;
 
     display:flex;
 
-    gap:40px;
+    justify-content:space-between;
 
-    margin:20px;
+    z-index:5;
 
-    font-size:24px;
+    font-size:22px;
 
     font-weight:bold;
 
 }
 
 
+#score{
 
-/* 캔버스 */
+    margin-left:10px;
 
-canvas{
+}
 
-    background:black;
 
-    border:3px solid #334155;
+#best{
 
-    border-radius:20px;
+    color:#ffd95e;
+
+}
+
+
+#lives{
+
+    margin-right:10px;
 
 }
 
 
 
-/* 게임오버 */
+.controls{
 
-#gameOver{
+    margin-bottom:20px;
 
-    position:fixed;
+    opacity:.8;
 
-    top:0;
+}
 
-    left:0;
 
-    width:100%;
 
-    height:100%;
+#mobileControls{
 
-    background:rgba(0,0,0,0.85);
+    position:absolute;
+
+    bottom:20px;
+
+    width:480px;
 
     display:flex;
 
-    justify-content:center;
+    justify-content:space-between;
 
-    align-items:center;
+    padding:0 40px;
 
-    z-index:999;
+}
+
+
+#mobileControls button{
+
+    width:80px;
+
+    height:80px;
+
+    font-size:36px;
+
+    border-radius:50%;
+
+    opacity:.75;
 
 }
 
 
 
-#gameOver h1{
+@media (min-width:768px){
 
-    font-size:65px;
+    #mobileControls{
 
-    margin-bottom:25px;
+        display:none;
 
-}
-
-
-
-#gameOver p{
-
-    font-size:32px;
-
-    margin-top:10px;
-
-}
-
-
-
-.hidden{
-
-    display:none !important;
+    }
 
 }

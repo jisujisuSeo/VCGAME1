@@ -1,91 +1,74 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Meteor Escape 4.0</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meteor Escape Ultimate</title>
 
-  <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css">
+
 </head>
-
 <body>
 
-<!-- 시작 화면 -->
-<div id="startScreen">
+<div id="startScreen" class="overlay">
+    <h1>🚀 Meteor Escape Ultimate</h1>
 
-  <div class="panel">
-
-    <h1>🚀 Meteor Escape</h1>
-
-    <p class="desc">
-
-      우주선을 조종하여<br>
-
-      떨어지는 운석을 피하세요!
-
+    <p>
+        좌우로 이동하며 운석을 피하세요!<br>
+        목숨은 3개입니다.
     </p>
 
-
-    <div class="guide">
-
-      ❤️ 목숨은 총 3개
-
-      <br><br>
-
-      ☄️ 운석을 피하면 +1점
-
-      <br><br>
-
-      ⌨️ 방향키 ← → 로 이동
-
-      <br><br>
-
-      🏆 최고 점수에 도전하세요!
-
+    <div class="controls">
+        ← → 또는 A D
     </div>
 
-
     <button id="startBtn">
-
-      게임 시작
-
+        GAME START
     </button>
-
-  </div>
-
 </div>
 
 
-
-
-
-<!-- 상단 HUD -->
 
 <div id="hud">
 
-  <div id="lives">
+    <div id="score">
+        SCORE : 0
+    </div>
 
-    ❤️❤️❤️
+    <div id="best">
+        BEST : 0
+    </div>
 
-  </div>
+    <div id="lives">
+
+        ❤️ ❤️ ❤️
+
+    </div>
+
+</div>
 
 
-  <div>
 
-    SCORE :
-
-    <span id="score">0</span>
-
-  </div>
+<canvas id="gameCanvas"
+width="480"
+height="720"></canvas>
 
 
-  <div>
 
-    BEST :
 
-    <span id="best">0</span>
+<div id="gameOver" class="overlay hidden">
 
-  </div>
+    <h1>GAME OVER</h1>
+
+    <p id="finalScore">
+
+    </p>
+
+    <button id="restartBtn">
+
+        PLAY AGAIN
+
+    </button>
 
 </div>
 
@@ -93,96 +76,22 @@
 
 
 
-<!-- 게임 화면 -->
+<div id="mobileControls">
 
-<canvas
+    <button id="leftBtn">
 
-id="gameCanvas"
+        ◀
 
-width="500"
-
-height="700">
-
-</canvas>
+    </button>
 
 
+    <button id="rightBtn">
 
+        ▶
 
-
-
-<!-- 게임오버 -->
-
-<div
-
-id="gameOver"
-
-class="hidden">
-
-<div class="panel">
-
-
-<h1>
-
-💥 GAME OVER
-
-</h1>
-
-
-<p>
-
-SCORE :
-
-<span id="finalScore">
-
-0
-
-</span>
-
-</p>
-
-
-
-<p>
-
-BEST :
-
-<span id="finalBest">
-
-0
-
-</span>
-
-</p>
-
-
-
-<button id="restartBtn">
-
-PLAY AGAIN
-
-</button>
-
+    </button>
 
 </div>
-
-</div>
-
-
-
-
-<!-- 효과음 -->
-
-<audio id="hitSound">
-
-<source
-
-src="https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg"
-
-type="audio/ogg">
-
-</audio>
-
-
 
 <script src="script.js"></script>
 
