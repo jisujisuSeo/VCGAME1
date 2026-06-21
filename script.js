@@ -1,108 +1,447 @@
-const canvas=document.getElementById('gameCanvas');
-const ctx=canvas.getContext('2d');
 
-const timerText=document.getElementById('timer');
-const gameOverScreen=document.getElementById('gameOverScreen');
-const restartBtn=document.getElementById('restartBtn');
-const resultText=document.getElementById('resultText');
+const canvas = document.getElementById("gameCanvas");
 
-let player, meteors;
-let leftPressed=false, rightPressed=false;
+const ctx = canvas.getContext("2d");
+
+const scoreEl = document.getElementById("score");
+
+const bestEl = document.getElementById("best");
+
+const livesEl = document.getElementById("lives");
+
+const overlay = document.getElementById("overlay");
+
+const finalScore = document.getElementById("finalScore");
+
+const finalBest = document.getElementById("finalBest");
+
+const restartBtn = document.getElementById("restartBtn");
+
+
+
+let player;
+
+let meteors=[];
+
+let stars=[];
+
+let lives;
+
+let score;
+
+let best;
+
+let invincible=0;
+
 let gameOver=false;
-let startTime;
+
+
 
 function init(){
-  player={x:220,y:630,width:60,height:60,speed:7};
-  meteors=[];
-  gameOver=false;
-  startTime=Date.now();
-  gameOverScreen.classList.add('hidden');
-}
 
-document.addEventListener('keydown',e=>{
- if(e.key==='ArrowLeft') leftPressed=true;
- if(e.key==='ArrowRight') rightPressed=true;
+
+player={
+
+x:225,
+
+y:620,
+
+width:50,
+
+height:50,
+
+speed:8
+
+};
+
+
+meteors=[];
+
+
+stars=[];
+
+
+for(let i=0;i<50;i++){
+
+stars.push({
+
+x:Math.random()*500,
+
+y:Math.random()*700,
+
+size:Math.random()*2+1
+
 });
 
-document.addEventListener('keyup',e=>{
- if(e.key==='ArrowLeft') leftPressed=false;
- if(e.key==='ArrowRight') rightPressed=false;
+}
+
+
+
+lives=3;
+
+
+score=0;
+
+
+best=localStorage.getItem("meteorBest") || 0;
+
+
+invincible=0;
+
+
+gameOver=false;
+
+
+overlay.classList.add("hidden");
+
+
+updateHud();
+
+}
+
+
+
+function updateHud(){
+
+
+livesEl.innerHTML=
+
+"❤️".repeat(lives)+
+
+"🤍".repeat(3-lives);
+
+
+scoreEl.innerText=score;
+
+
+bestEl.innerText=best;
+
+}
+
+
+
+document.addEventListener("keydown",(e)=>{
+
+
+if(e.key==="ArrowLeft"){
+
+player.x-=player.speed;
+
+}
+
+
+if(e.key==="ArrowRight"){
+
+player.x+=player.speed;
+
+}
+
+
 });
 
-function createMeteor(){
- const size=Math.random()*40+30;
- meteors.push({
-   x:Math.random()*(canvas.width-size),
-   y:-size,
-   width:size,
-   height:size,
-   speed:Math.random()*3+4
- });
-}
+
 
 setInterval(()=>{
- if(!gameOver) createMeteor();
-},600);
+
+
+if(gameOver) return;
+
+
+meteors.push({
+
+x:Math.random()*450,
+
+y:-50,
+
+radius:20+Math.random()*20,
+
+speed:3+Math.random()*3,
+
+passed:false
+
+});
+
+
+},550);
+
+
+
+
+function collision(a,b){
+
+
+return (
+
+a.x < b.x+b.radius*2 &&
+
+a.x+a.width > b.x &&
+
+a.y < b.y+b.radius*2 &&
+
+a.y+a.height > b.y
+
+);
+
+}
+
+
+
+function drawStars(){
+
+
+ctx.fillStyle="white";
+
+
+stars.forEach(star=>{
+
+star.y+=1;
+
+
+if(star.y>700){
+
+star.y=0;
+
+}
+
+
+ctx.fillRect(
+
+star.x,
+
+star.y,
+
+star.size,
+
+star.size
+
+);
+
+});
+
+}
+
+
+
+function drawPlayer(){
+
+
+if(
+
+invincible>0 &&
+
+Math.floor(invincible/5)%2
+
+){
+
+ctx.fillStyle="white";
+
+}
+
+else{
+
+ctx.fillStyle="#22d3ee";
+
+}
+
+
+
+ctx.beginPath();
+
+
+ctx.moveTo(player.x+25,player.y);
+
+ctx.lineTo(player.x,player.y+50);
+
+ctx.lineTo(player.x+50,player.y+50);
+
+ctx.closePath();
+
+ctx.fill();
+
+}
+
+
+
+function drawMeteors(){
+
+
+for(let i=meteors.length-1;i>=0;i--){
+
+let m=meteors[i];
+
+
+m.y+=m.speed+(score*0.01);
+
+
+ctx.fillStyle="#f97316";
+
+
+ctx.beginPath();
+
+ctx.arc(
+
+m.x+m.radius,
+
+m.y+m.radius,
+
+m.radius,
+
+0,
+
+Math.PI*2
+
+);
+
+ctx.fill();
+
+
+
+if(m.y>700 && !m.passed){
+
+m.passed=true;
+
+score++;
+
+
+if(score>best){
+
+best=score;
+
+localStorage.setItem(
+
+"meteorBest",
+
+best
+
+);
+
+}
+
+
+updateHud();
+
+}
+
+
+
+if(collision(player,m) && invincible<=0){
+
+
+lives--;
+
+
+invincible=60;
+
+
+updateHud();
+
+
+
+if(lives<=0){
+
+gameOver=true;
+
+
+overlay.classList.remove("hidden");
+
+
+finalScore.innerText=score;
+
+
+finalBest.innerText=best;
+
+}
+
+}
+
+
+
+if(m.y>760){
+
+meteors.splice(i,1);
+
+}
+
+
+}
+
+}
+
+
 
 function update(){
- if(gameOver) return;
 
- if(leftPressed) player.x-=player.speed;
- if(rightPressed) player.x+=player.speed;
 
- if(player.x<0) player.x=0;
- if(player.x+player.width>canvas.width)
-    player.x=canvas.width-player.width;
+ctx.clearRect(
 
- const surviveTime=Math.floor((Date.now()-startTime)/1000);
- timerText.innerText=`생존시간 : ${surviveTime}초`;
+0,
 
- const speedBonus=surviveTime*0.03;
+0,
 
- for(let i=meteors.length-1;i>=0;i--){
-   const m=meteors[i];
-   m.y+=m.speed+speedBonus;
+canvas.width,
 
-   if(player.x < m.x+m.width &&
-      player.x+player.width > m.x &&
-      player.y < m.y+m.height &&
-      player.y+player.height > m.y){
-      endGame(false);
-   }
+canvas.height
 
-   if(m.y>canvas.height) meteors.splice(i,1);
- }
+);
 
- if(surviveTime>=60) endGame(true);
+
+
+drawStars();
+
+
+
+player.x=Math.max(
+
+0,
+
+Math.min(
+
+450,
+
+player.x
+
+)
+
+);
+
+
+
+drawPlayer();
+
+
+
+drawMeteors();
+
+
+
+if(invincible>0){
+
+invincible--;
+
 }
 
-function draw(){
- ctx.clearRect(0,0,canvas.width,canvas.height);
 
- ctx.fillStyle='#4FC3F7';
- ctx.fillRect(player.x,player.y,player.width,player.height);
 
- ctx.fillStyle='#ff5722';
- meteors.forEach(m=>{
-   ctx.beginPath();
-   ctx.arc(m.x+m.width/2,m.y+m.height/2,m.width/2,0,Math.PI*2);
-   ctx.fill();
- });
+requestAnimationFrame(update);
+
 }
 
-function endGame(win){
- gameOver=true;
- gameOverScreen.classList.remove('hidden');
- resultText.innerText=win ? '🎉 YOU WIN' : '💀 GAME OVER';
-}
 
-function gameLoop(){
- update();
- draw();
- requestAnimationFrame(gameLoop);
-}
 
-restartBtn.addEventListener('click',()=>init());
+restartBtn.addEventListener(
+
+"click",
+
+()=>{
 
 init();
-gameLoop();
+
+}
+
+);
+
+
+
+init();
+
+update();
