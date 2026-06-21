@@ -1,50 +1,165 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Meteor Escape 2.0</title>
+
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<div id="hud">
-  <div id="lives">❤️ ❤️ ❤️</div>
+  <!-- 시작 화면 -->
+  <div id="startScreen">
 
-  <div class="scoreBox">
-    SCORE : <span id="score">0</span>
+    <h1>🚀 Meteor Escape</h1>
+
+    <p>
+      우주선을 조종하여<br>
+      떨어지는 운석을 피하세요!
+    </p>
+
+    <div class="guide">
+
+      ❤️ 목숨 3개
+
+      <br><br>
+
+      ☄️ 운석에 맞으면 목숨 감소
+
+      <br><br>
+
+      🏆 운석을 피할 때마다 점수 +1
+
+      <br><br>
+
+      ⌨️ 방향키 ← → 로 이동
+
+      <br><br>
+
+      살아남아 최고 점수에 도전하세요!
+    </div>
+
+
+    <button id="startBtn">
+
+      게임 시작
+
+    </button>
+
   </div>
 
-  <div class="scoreBox">
-    BEST : <span id="best">0</span>
+
+  <!-- 상단 UI -->
+
+  <div id="hud">
+
+    <div id="lives">
+
+      ❤️ ❤️ ❤️
+
+    </div>
+
+
+    <div class="scoreBox">
+
+      SCORE :
+      <span id="score">
+
+        0
+
+      </span>
+
+    </div>
+
+
+    <div class="scoreBox">
+
+      BEST :
+      <span id="best">
+
+        0
+
+      </span>
+
+    </div>
+
   </div>
-</div>
 
 
-<canvas id="gameCanvas" width="500" height="700"></canvas>
+
+  <!-- 게임 화면 -->
+
+  <canvas
+
+      id="gameCanvas"
+
+      width="500"
+
+      height="700">
+
+  </canvas>
 
 
-<div id="overlay" class="hidden">
 
-  <h1>💥 GAME OVER</h1>
 
-  <p>
-    YOUR SCORE :
-    <span id="finalScore">0</span>
-  </p>
+  <!-- 게임 오버 -->
 
-  <p>
-    BEST :
-    <span id="finalBest">0</span>
-  </p>
+  <div
 
-  <button id="restartBtn">
-    PLAY AGAIN
-  </button>
+    id="overlay"
 
-</div>
+    class="hidden">
+
+      <h1>
+
+        💥 GAME OVER
+
+      </h1>
+
+
+      <p>
+
+        YOUR SCORE :
+
+        <span id="finalScore">
+
+          0
+
+        </span>
+
+      </p>
+
+
+
+      <p>
+
+        BEST :
+
+        <span id="finalBest">
+
+          0
+
+        </span>
+
+      </p>
+
+
+
+      <button id="restartBtn">
+
+        PLAY AGAIN
+
+      </button>
+
+  </div>
+
+
 
 <script src="script.js"></script>
 
 </body>
+
 </html>
