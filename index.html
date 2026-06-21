@@ -3,89 +3,185 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Meteor Escape 3.0</title>
+  <title>Meteor Escape 4.0</title>
+
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
 <!-- 시작 화면 -->
 <div id="startScreen">
+
   <div class="panel">
+
     <h1>🚀 Meteor Escape</h1>
 
     <p class="desc">
-      우주선을 조종하여 떨어지는 운석을 피하세요!
+
+      우주선을 조종하여<br>
+
+      떨어지는 운석을 피하세요!
+
     </p>
 
-    <ul class="guide">
-      <li>❤️ 목숨은 총 3개입니다.</li>
-      <li>☄️ 운석을 피할 때마다 점수가 +1 증가합니다.</li>
-      <li>⌨️ 방향키 ← → 로 이동합니다.</li>
-      <li>🏆 최고 점수에 도전해보세요!</li>
-    </ul>
+
+    <div class="guide">
+
+      ❤️ 목숨은 총 3개
+
+      <br><br>
+
+      ☄️ 운석을 피하면 +1점
+
+      <br><br>
+
+      ⌨️ 방향키 ← → 로 이동
+
+      <br><br>
+
+      🏆 최고 점수에 도전하세요!
+
+    </div>
+
 
     <button id="startBtn">
+
       게임 시작
+
     </button>
+
   </div>
+
 </div>
 
 
-<!-- 게임 UI -->
+
+
+
+<!-- 상단 HUD -->
+
 <div id="hud">
 
   <div id="lives">
+
     ❤️❤️❤️
+
   </div>
 
+
   <div>
+
     SCORE :
+
     <span id="score">0</span>
+
   </div>
 
+
   <div>
+
     BEST :
+
     <span id="best">0</span>
+
   </div>
 
 </div>
 
 
+
+
+
+<!-- 게임 화면 -->
+
 <canvas
+
 id="gameCanvas"
+
 width="500"
+
 height="700">
+
 </canvas>
+
+
+
 
 
 
 <!-- 게임오버 -->
 
-<div id="gameOver" class="hidden">
+<div
 
-  <div class="panel">
+id="gameOver"
 
-    <h1>💥 GAME OVER</h1>
+class="hidden">
 
-    <p>
-      SCORE :
-      <span id="finalScore">0</span>
-    </p>
+<div class="panel">
 
-    <p>
-      BEST :
-      <span id="finalBest">0</span>
-    </p>
 
-    <button id="restartBtn">
+<h1>
 
-      PLAY AGAIN
+💥 GAME OVER
 
-    </button>
+</h1>
 
-  </div>
+
+<p>
+
+SCORE :
+
+<span id="finalScore">
+
+0
+
+</span>
+
+</p>
+
+
+
+<p>
+
+BEST :
+
+<span id="finalBest">
+
+0
+
+</span>
+
+</p>
+
+
+
+<button id="restartBtn">
+
+PLAY AGAIN
+
+</button>
+
 
 </div>
+
+</div>
+
+
+
+
+<!-- 효과음 -->
+
+<audio id="hitSound">
+
+<source
+
+src="https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg"
+
+type="audio/ogg">
+
+</audio>
+
 
 
 <script src="script.js"></script>
